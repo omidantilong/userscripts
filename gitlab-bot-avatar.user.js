@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        Gitlab bot avatars
-// @namespace   Violentmonkey Scripts
+// @namespace   https://github.com/omidantilong/userscripts
 // @match       *://gitlab*/*
 // @grant       none
-// @version     1.0
+// @version     1.1
 // @author      Omid Kashan
-// @description 19/09/2023, 12:42:20
+// @description Changes the default Gitlab avatar to something more useful for bot accounts
 // ==/UserScript==
 
 const style = document.createElement('style')
