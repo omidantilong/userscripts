@@ -1,88 +1,118 @@
 // ==UserScript==
 // @name        Get Contentful Non-2FA accounts
 // @namespace   https://github.com/omidantilong/userscripts
-// @match       *://app.contentful.com/account/organizations*
+// @match       *://app.contentful.com/account/organizations/*/organization_memberships
 // @grant       none
-// @version     1.1
+// @version     2.0
 // @author      Omid Kashan
 // @description Retrieves list of users without 2FA enabled
 // ==/UserScript==
 
-let FIRST_RUN = true
+const PAGE_LIMIT = 100
 
-function initPolling() {
-  const waitForRows = setInterval(() => {
-    const rows = document.querySelectorAll('table tbody tr')
+async function getUsers({endpoint, headers, skip = 0} = {}) {
 
-    if(rows && rows.length) {
+  const usersApiEndpoint = `${endpoint}?activePage=0&include=sys.user&limit=${PAGE_LIMIT}&order=-sys.createdAt&query=&skip=${skip}`
 
-      const firstCell = document.querySelector('table tbody tr td:nth-child(2)')
+  const response = await fetch(usersApiEndpoint, {
+    method: "GET",
+    headers
+  }).then((res) => res.json())
 
-      if(firstCell.textContent.includes('@')) {
-
-        if(FIRST_RUN) {
-          createElements()
-          FIRST_RUN = false
-        }
-
-        clearInterval(waitForRows)
-        getRows(rows)
-
-      }
-    }
-  }, 500)
+  return response
 
 }
 
-function getRows(rows) {
+async function fetchUserList({endpoint, headers}) {
 
-  setTimeout(() => {
+  let skip = 0
 
-    const filtered = Array.from(rows).map((row) => {
-      const statusCell = row.querySelector('td:nth-child(5)')
-      const emailCell = row.querySelector('td:nth-child(2)')
-      return statusCell.textContent.includes('Enabled') ? false : emailCell.querySelector('div[data-test-id="user-card.email"]').textContent
-    }).filter((d) => d)
+  const { container, copyButton } = await createContainer()
+  const { total, includes } = await getUsers({endpoint, headers, skip})
 
-    console.log(filtered.join('\n'))
+  let list = includes.User
+  let fetched = includes.User.length
 
-    printResults(filtered)
+  do {
 
-  }, 100)
+    skip += PAGE_LIMIT
 
-}
+    const { includes } = await getUsers({endpoint, headers, skip})
 
-function printResults(users) {
+    list.push(...includes.User)
+    fetched += includes.User.length
 
-  const list = document.querySelector(`.userlist-2fa-container ul`)
+  } while(fetched < total)
 
-  list.textContent = ''
+  const affectedUsers = list.filter((user) => !user["2faEnabled"]).sort((a,b) => a.email < b.email ? -1 : 1)
 
-  users.forEach((user) => {
-    list.insertAdjacentHTML('beforeend', `<li>${user}</li>`)
+  console.log(affectedUsers)
+
+  copyButton.removeAttribute("disabled")
+  container.textContent = ""
+
+  affectedUsers.forEach((user) => {
+    container.insertAdjacentHTML("beforeend", `<li>${user.email}</li>\n`)
   })
 
 }
 
-function createElements() {
+function createRequest(arguments) {
 
-  const main = document.querySelector('main')
-  const container = document.createElement('div')
-  const list = document.createElement('ul')
+  const endpoint = arguments[0].split("?")[0]
+  const headers = arguments[1].headers
 
-  container.classList.add('userlist-2fa-container')
-  container.insertAdjacentHTML('afterbegin', '<h2>Non-2FA accounts found on this page</h2>')
-  container.append(list)
-  main.prepend(container)
+  fetchUserList({endpoint, headers})
+
+}
+
+function beginOverride() {
+
+  let collected = false
+  const fetch = window.fetch
+
+  window.fetch = function() {
+    if(!collected && arguments[0].includes("organization_memberships")) {
+      collected = true
+      createRequest(arguments)
+    }
+    return Promise.resolve(fetch.apply(window, arguments))
+  }
+
+}
+
+async function createContainer() {
+
+  const main = await waitForElement("main")
+  const parent = document.createElement("div")
+  const container = document.createElement("ul")
+  const copyButton = document.createElement("button")
+
+  parent.classList.add("userlist-container")
+  parent.insertAdjacentHTML("afterbegin", `<h2>⚠️ Non-2FA accounts</h2>`)
+  parent.append(container)
+  parent.append(copyButton)
+  main.prepend(parent)
+
+  copyButton.textContent = "Copy to clipboard"
+  copyButton.setAttribute("disabled", "")
+
+  copyButton.addEventListener("click", (e) => {
+    navigator.clipboard.writeText(container.textContent)
+  })
+
+  container.insertAdjacentHTML("afterbegin", `<li class="userlist-loading">Loading...</li>`)
+
+  return { container, copyButton }
 
 }
 
 function addStyles() {
 
-  const style = document.createElement('style')
+  const style = document.createElement("style")
 
   style.textContent = `
-  div.userlist-2fa-container {
+  .userlist-container {
     padding:1.5rem;
     background:white;
     position:relative;
@@ -90,16 +120,29 @@ function addStyles() {
     box-shadow:0px 2px 10px rgba(0,0,0,0.1);
     margin:0 auto 2rem auto;
     border-radius:4px;
-    border:1px solid #ddd;
+    border:2px solid #FF7043;
     max-width:1280px;
   }
 
-  div.userlist-2fa-container h2 {
+  .userlist-container h2 {
     margin:0 0 1rem 0;
   }
 
-  button[data-test-id*="cf-ui-pagination"] span {
-    pointer-events:none;
+  .userlist-container button {
+    background:#FF7043;
+    padding:.75rem 1rem;
+    color:white;
+    font-weight:bold;
+    border-radius:4px;
+    margin:1rem 0 0 0;
+  }
+
+  .userlist-container button[disabled] {
+    display:none
+  }
+
+  .userlist-loading {
+    color:#666;
   }
   `
 
@@ -107,26 +150,31 @@ function addStyles() {
 
 }
 
-function addListeners() {
+async function waitForElement(selector) {
 
-  window.addEventListener('click', (e) => {
-    if(e.target?.dataset?.testId?.includes('cf-ui-pagination')) {
-      initPolling()
+  return new Promise((resolve) => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector))
     }
-  })
-  
-  window.addEventListener('change', (e) => {
-    if(e.target?.dataset?.testId?.includes('cf-ui-select')) {
-      initPolling()
-    }
+    const observer = new MutationObserver(() => {
+      if (document.querySelector(selector)) {
+        observer.disconnect()
+        resolve(document.querySelector(selector))
+      }
+    })
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    })
   })
 
 }
 
 function init() {
+
   addStyles()
-  addListeners()
-  initPolling()
+  beginOverride()
+
 }
 
 init()
