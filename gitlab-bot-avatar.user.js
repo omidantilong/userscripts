@@ -11,11 +11,11 @@
 const style = document.createElement('style')
 
 style.textContent = `
-a[href*="_bot_"] .gl-avatar-identicon-bg1 {
+a[href*="_bot"] .gl-avatar-identicon-bg1 {
     background:#9C27B0;
 }
 
-a[href*="_bot_"] .gl-avatar-identicon-bg1:before {
+a[href*="_bot"] .gl-avatar-identicon-bg1:before {
     content:"BOT";
     font-size:10px;
     font-weight:bold;
