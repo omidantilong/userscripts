@@ -3,12 +3,13 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       *://app.contentful.com/account/organizations/*/organization_memberships
 // @grant       none
-// @version     2.0
+// @version     3.0
 // @author      Omid Kashan
 // @description Retrieves list of users without 2FA enabled
 // ==/UserScript==
 
 const PAGE_LIMIT = 100
+
 
 async function getUsers({endpoint, headers, skip = 0} = {}) {
 
@@ -18,6 +19,9 @@ async function getUsers({endpoint, headers, skip = 0} = {}) {
     method: "GET",
     headers
   }).then((res) => res.json())
+
+  console.log(response)
+
 
   return response
 
@@ -61,7 +65,6 @@ function createRequest(arguments) {
 
   const endpoint = arguments[0].split("?")[0]
   const headers = arguments[1].headers
-
   fetchUserList({endpoint, headers})
 
 }
@@ -79,20 +82,22 @@ function beginOverride() {
     return Promise.resolve(fetch.apply(window, arguments))
   }
 
+
 }
 
 async function createContainer() {
-
-  const main = await waitForElement("main")
+  const main = await waitForElement("table[data-test-id='organization-membership-list']")
   const parent = document.createElement("div")
   const container = document.createElement("ul")
   const copyButton = document.createElement("button")
+
+  const wrapper = document.querySelector("div[data-test-id='cf-layout-content-container']")
 
   parent.classList.add("userlist-container")
   parent.insertAdjacentHTML("afterbegin", `<h2>⚠️ Non-2FA accounts</h2>`)
   parent.append(container)
   parent.append(copyButton)
-  main.prepend(parent)
+  wrapper.prepend(parent)
 
   copyButton.textContent = "Copy to clipboard"
   copyButton.setAttribute("disabled", "")
@@ -112,16 +117,25 @@ function addStyles() {
   const style = document.createElement("style")
 
   style.textContent = `
+  body:has(.userlist-container) {
+    overflow-y: auto !important
+  }
+
+  div:has(> section[data-test-id='cf-ui-layout']) {
+    display:block !important;
+  }
+
   .userlist-container {
     padding:1.5rem;
     background:white;
     position:relative;
     z-index:999;
     box-shadow:0px 2px 10px rgba(0,0,0,0.1);
-    margin:0 auto 2rem auto;
+    margin:2rem auto 2rem auto;
     border-radius:4px;
     border:2px solid #FF7043;
-    max-width:1280px;
+    max-width:900px;
+    width:100%;
   }
 
   .userlist-container h2 {
