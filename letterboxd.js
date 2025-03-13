@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.0
+// @version     1.1.0
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -25,9 +25,7 @@ const style = document.createElement('style')
 style.textContent = `
 
 .site-header section {
-  width:calc(100% - 6rem);
-  max-width:1600px;
-  min-width:1200px;
+  width:1200px;
   display:flex;
   align-items:center;
 
@@ -139,15 +137,58 @@ div#content {
 }
 
 .review.body-text p {
-font-size:1.5rem;
+  font-size:1.5rem;
 }
 
 p a.text-slug {
-font-size:1.125rem;
+  font-size:1.125rem;
 }
 
 p.text-link.text-footer {
-font-size:1.125rem;
+  font-size:1.125rem;
+}
+
+.poster-list.-horizontal {
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:0.5rem;
+  margin-left:0;
+}
+.poster-list.-horizontal .poster-container {
+  margin-left:0;
+  width:auto;
+}
+.poster-list.-horizontal .poster,
+.poster-list.-p150 .poster {
+  margin-left:0 !important;
+  aspect-ratio:10/16;
+  width:100%;
+  height:auto;
+}
+
+.poster-list.-horizontal .poster img[width="150"] {
+  width:100%;
+  height:auto;
+  aspect-ratio:10/16;
+  object-fit:cover;
+}
+
+.poster-list.-horizontal::after {
+  display:none;
+}
+
+.banner img {
+  width:100%;
+  height:auto;
+}
+
+a.all-link {
+  font-size:1rem;
+  top:0;
+}
+
+.twipsy {
+  font-size:1.125rem;
 }
 
 `
