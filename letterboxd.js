@@ -31,7 +31,7 @@ style.textContent = `
 
 }
 
-.site-header {
+body.film.backdropped .site-header {
   background:linear-gradient(0deg, rgb(0 0 0 / 0), #000)
 }
 .site-header .main-nav {
@@ -216,7 +216,13 @@ display:none;
 .wide-sidebar {
   width:auto;
 }
+.profile-statistic .definition {
+  font-size:1rem;
+}
 
+.profile-statistic .value {
+  font-size:2rem;
+}
 
 `
 
