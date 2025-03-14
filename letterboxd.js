@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.2
+// @version     1.1.3
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
