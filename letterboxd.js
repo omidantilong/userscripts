@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.5
+// @version     1.1.6
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -47,13 +47,18 @@ body.film.backdropped .site-header {
   background:#1c2129;
 }
 
+/*
 #content {
-transition:filter 0.1s linear;
+  transition:filter 0.1s linear;
 }
+
+body:has(a.toggle-menu:hover) .backdrop-container,
 body:has(a.toggle-menu:hover) #content,
+body:has(.subnav:hover) .backdrop-container,
 body:has(.subnav:hover) #content {
-  filter:brightness(0.5) blur(2px)
+  filter:brightness(0.5);
 }
+*/
 
 .site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a {
   font-size:1.125rem;
@@ -93,7 +98,6 @@ body:has(.subnav:hover) #content {
 }
 
 .backdrop-container {
-  xtop:160px;
   width:100vw;
 }
 
@@ -108,12 +112,13 @@ body:has(.subnav:hover) #content {
 }
 
 .site-body.-backdrop {
-  padding-top:350px;
+  padding-top:0;
+  margin-top:350px;
 }
 
 .profile-header.-is-not-mini-nav nav.profile-navigation {
-border:0;
-border-bottom:1px solid #24303C;
+  border:0;
+  border-bottom:1px solid #24303C;
 }
 
 .profile-navigation .navlist>.navitem.-active .navlink:before, .profile-navigation .navlist>.navitem.-active .navlink[href]:before {
@@ -127,11 +132,21 @@ border-bottom:1px solid #24303C;
 }
 
 #film-page-wrapper > .col-17 {
-  width:900px;
+  grid-column: 2;
+  width:auto;
 }
 
 #film-page-wrapper > .col-17 > .col-10 {
-  width:600px;
+  width:580px;
+}
+
+#film-page-wrapper > .col-17 > .sidebar {
+  min-width:238px;
+}
+
+#film-page-wrapper > .col-6.is_stuck {
+  position:fixed !important;
+  top:20px !important;
 }
 
 .ac_results {
@@ -149,10 +164,10 @@ border-bottom:1px solid #24303C;
 .les-global-search input {
   width:100%;
   font-size:1.25rem;
-  padding:.75rem;
+  padding:0.75rem;
   opacity:0.75;
   margin:0 0 0 1rem;
-  background:white;
+  background:#eee;
 }
 
 .les-global-search input:hover,
@@ -209,7 +224,8 @@ p.text-link.text-footer {
 }
 .poster-list.-horizontal .poster,
 .poster-list.-p150 .poster,
-.poster-list.-grid.-constrained.-p125 .poster {
+.poster-list.-grid.-constrained.-p125 .poster,
+.film .poster-list.-p230 .poster {
   margin-left:0 !important;
   margin-bottom:0 !important;
   aspect-ratio:2/3;
@@ -222,7 +238,8 @@ p.text-link.text-footer {
 }
 
 .poster-list.-horizontal .poster img[width="150"],
-.poster-list.-p125.-grid.-constrained .poster img[width="125"] {
+.poster-list.-p125.-grid.-constrained .poster img[width="125"],
+.film .poster-list.-p230 .poster img[width="230"] {
   width:100%;
   height:auto;
   aspect-ratio:2/3;
@@ -252,8 +269,12 @@ a.all-link {
 }
 
 .cols-2:before,
-.cols-2:after {
-display:none;
+.cols-2:after,
+.cols-3:before,
+.cols-3:after,
+.col-6:before,
+.col-6:after {
+  display:none;
 }
 
 .cols-2 {
@@ -262,10 +283,18 @@ display:none;
   gap:3rem;
 }
 
+.cols-3 {
+  display:grid;
+  grid-template-columns: 3fr 9fr;
+  gap:4rem;
+}
+
 .col-16,
 .col-17,
+.col-6,
 .wide-sidebar,
 .sidebar {
+  margin:0;
   width:auto;
 }
 
