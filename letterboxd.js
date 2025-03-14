@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.6
+// @version     1.1.7
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -231,6 +231,10 @@ p.text-link.text-footer {
   aspect-ratio:2/3;
   width:100%;
   height:auto;
+}
+
+.poster.-attributed, .-p150 .poster.-attributed {
+  aspect-ratio:30/49;
 }
 
 .poster-list.-p125.-grid.-constrained {
