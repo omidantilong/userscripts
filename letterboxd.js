@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.1
+// @version     1.1.2
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -41,6 +41,29 @@ body.film.backdropped .site-header {
 .site-header .main-nav .navitem {
   position:relative;
   right:auto !important;
+}
+
+.site-header .main-nav > .navitems > .navitem > .subnav {
+  background:#1c2129;
+}
+
+#content {
+transition:filter 0.1s linear;
+}
+body:has(a.toggle-menu:hover) #content,
+body:has(.subnav:hover) #content {
+  filter:brightness(0.5) blur(2px)
+}
+
+.site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a {
+font-size:1.125rem;
+  color:#9ab;
+  padding:0.75rem 1.5rem;
+}
+
+.site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a:hover {
+  text-decoration:underline;
+  background:rgb(0 0 0 / 0.5);
 }
 
 .site-header .react-component {
@@ -223,6 +246,7 @@ display:none;
 .profile-statistic .value {
   font-size:2rem;
 }
+
 
 `
 
