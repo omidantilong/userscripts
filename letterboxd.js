@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.4
+// @version     1.1.5
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -56,7 +56,7 @@ body:has(.subnav:hover) #content {
 }
 
 .site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a {
-font-size:1.125rem;
+  font-size:1.125rem;
   color:#9ab;
   padding:0.75rem 1.5rem;
 }
@@ -189,24 +189,40 @@ p.text-link.text-footer {
   margin-left:0;
 }
 
+.poster-list.-p125 {
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:1rem;
+  margin-left:0 !important;
+}
+
 #favourites .poster-list.-horizontal,
 #recent-activity .poster-list.-horizontal {
   grid-template-columns:repeat(4, 1fr);
 }
 
-.poster-list.-horizontal .poster-container {
+.poster-list.-horizontal .poster-container,
+.poster-list.-grid.-constrained.-p125 > .poster-container {
   margin-left:0;
+  margin-bottom:0;
   width:auto;
 }
 .poster-list.-horizontal .poster,
-.poster-list.-p150 .poster {
+.poster-list.-p150 .poster,
+.poster-list.-grid.-constrained.-p125 .poster {
   margin-left:0 !important;
+  margin-bottom:0 !important;
   aspect-ratio:2/3;
   width:100%;
   height:auto;
 }
 
-.poster-list.-horizontal .poster img[width="150"] {
+.poster-list.-p125.-grid.-constrained {
+  max-width:none;
+}
+
+.poster-list.-horizontal .poster img[width="150"],
+.poster-list.-p125.-grid.-constrained .poster img[width="125"] {
   width:100%;
   height:auto;
   aspect-ratio:2/3;
@@ -247,9 +263,52 @@ display:none;
 }
 
 .col-16,
-.wide-sidebar {
+.col-17,
+.wide-sidebar,
+.sidebar {
   width:auto;
 }
+
+.films-watched .cols-2 {
+  grid-template-columns:1fr;
+}
+
+.pagination,
+.pagination .paginate-nextprev a {
+  font-size:1.5rem;
+  overflow:visible;
+}
+
+.sorting-selects label,
+.smenu-menu,
+.smenu-menu li,
+.smenu-menu li > .selected,
+.smenu-menu li a.item,
+.smenu-menu .smenu-selected {
+  font-size:1rem;
+}
+
+/*
+.smenu-menu li,
+.smenu-menu li a.item {
+color:white;
+}*/
+
+.smenu-menu {
+  padding:0.5rem;
+}
+
+.pagination .paginate-page a,
+.pagination .paginate-page span {
+  margin:0 0.25rem;
+  padding:0.75rem 1rem;
+  display:block;
+  border-radius:4px;
+}
+
+
+
+
 .profile-statistic .definition {
   font-size:1rem;
 }
