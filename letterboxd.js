@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.7
+// @version     1.1.8
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -24,16 +24,21 @@ const style = document.createElement('style')
 
 style.textContent = `
 
-.site-header section {
-  width:1200px;
-  display:flex;
-  align-items:center;
-
+body {
+  background:#14181c;
 }
+
 
 body.film.backdropped .site-header {
   background:linear-gradient(0deg, rgb(0 0 0 / 0), #000)
 }
+
+.site-header section {
+  width:1200px;
+  display:flex;
+  align-items:center;
+}
+
 .site-header .main-nav {
   position:static;
 }
@@ -45,20 +50,26 @@ body.film.backdropped .site-header {
 
 .site-header .main-nav > .navitems > .navitem > .subnav {
   background:#1c2129;
+  box-shadow:0px 2px 10px rgb(0 0 0 / 0.5);
+  border-radius:8px;
+  border-top:2px solid #1c2129;
+  transform:translateY(-2px);
 }
 
-/*
+
 #content {
+  position:relative;
   transition:filter 0.1s linear;
+  background:none;
 }
 
 body:has(a.toggle-menu:hover) .backdrop-container,
 body:has(a.toggle-menu:hover) #content,
 body:has(.subnav:hover) .backdrop-container,
 body:has(.subnav:hover) #content {
-  filter:brightness(0.5);
+  filter:blur(2px);
 }
-*/
+
 
 .site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a {
   font-size:1.125rem;
