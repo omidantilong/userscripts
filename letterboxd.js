@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.8
+// @version     1.1.9
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -161,7 +161,22 @@ body:has(.subnav:hover) #content {
 }
 
 .ac_results {
-  width:200px !important;
+  width:300px !important;
+}
+
+.ac_results ul {
+  max-height:250px !important;
+}
+
+.ac_results ul li {
+  padding:0.5rem 1rem;
+  border-bottom:1px solid rgb(0 0 0 / 0.1);
+  cursor:pointer;
+  font-size:1.125rem;
+}
+
+.ac_results ul li:hover {
+  text-decoration:underline;
 }
 
 .les-global-search {
