@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.9
+// @version     1.1.10
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -24,13 +24,48 @@ const style = document.createElement('style')
 
 style.textContent = `
 
-body {
+body.film {
   background:#14181c;
 }
 
 
 body.film.backdropped .site-header {
   background:linear-gradient(0deg, rgb(0 0 0 / 0), #000)
+}
+
+body #content {
+  position:relative;
+  transition:filter 0.1s linear;
+}
+
+body.film #content {
+  background:none;
+}
+
+
+body:has(a.toggle-menu:hover) .backdrop-container,
+body:has(a.toggle-menu:hover) #content,
+body:has(.subnav:hover) .backdrop-container,
+body:has(.subnav:hover) #content {
+  filter:blur(2px);
+}
+
+.content-wrap {
+  width:1200px;
+}
+
+.backdrop-container {
+  width:100vw;
+}
+
+.backdrop-container #backdrop {
+  width:100%;
+  height:auto;
+  aspect-ratio:16 / 9;
+}
+
+.backdrop-container .backdropmask::before {
+  width:100%;
 }
 
 .site-header section {
@@ -55,21 +90,6 @@ body.film.backdropped .site-header {
   border-top:2px solid #1c2129;
   transform:translateY(-2px);
 }
-
-
-#content {
-  position:relative;
-  transition:filter 0.1s linear;
-  background:none;
-}
-
-body:has(a.toggle-menu:hover) .backdrop-container,
-body:has(a.toggle-menu:hover) #content,
-body:has(.subnav:hover) .backdrop-container,
-body:has(.subnav:hover) #content {
-  filter:blur(2px);
-}
-
 
 .site-header .main-nav > .navitems > .navitem > .subnav li:not(:first-child) a {
   font-size:1.125rem;
@@ -108,19 +128,6 @@ body:has(.subnav:hover) #content {
   margin-left:1rem;
 }
 
-.backdrop-container {
-  width:100vw;
-}
-
-.backdrop-container #backdrop {
-  width:100%;
-  height:auto;
-  aspect-ratio:16 / 9;
-}
-
-.backdrop-container .backdropmask::before {
-  width:100%;
-}
 
 .site-body.-backdrop {
   padding-top:0;
@@ -138,9 +145,6 @@ body:has(.subnav:hover) #content {
   height:2px;
 }
 
-.content-wrap {
-  width:1200px;
-}
 
 #film-page-wrapper > .col-17 {
   grid-column: 2;
@@ -206,9 +210,6 @@ body:has(.subnav:hover) #content {
   .les-global-search {
 
   }
-}
-
-div#content {
 }
 
 .review.body-text p {
@@ -364,9 +365,6 @@ color:white;
   display:block;
   border-radius:4px;
 }
-
-
-
 
 .profile-statistic .definition {
   font-size:1rem;
