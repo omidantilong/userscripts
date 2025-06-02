@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.10
+// @version     1.1.11
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -252,17 +252,20 @@ p.text-link.text-footer {
 .poster-list.-horizontal .poster,
 .poster-list.-p150 .poster,
 .poster-list.-grid.-constrained.-p125 .poster,
+.poster-list.-p150 .poster.-attributed,
 .film .poster-list.-p230 .poster {
   margin-left:0 !important;
   margin-bottom:0 !important;
   aspect-ratio:2/3;
   width:100%;
-  height:auto;
+  height:auto !important;
 }
 
+/*
 .poster.-attributed, .-p150 .poster.-attributed {
   aspect-ratio:30/49;
 }
+*/
 
 .poster-list.-p125.-grid.-constrained {
   max-width:none;
