@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.11
+// @version     1.1.12
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -12,13 +12,30 @@ const header = document.querySelector('.site-logo')
 
 const formHtml = `
 <div class="les-global-search">
-  <div>
+  <form method="get" class="lb-header-search">
     <fieldset>
         <input type="text" class="field field-large ac_input" id="frm-film-search" data-url="/s/autocompletefilm" autocomplete="off" placeholder="Find a film...">
     </fieldset>
-  </div>
+  </form>
 </div>
 `
+
+header.insertAdjacentHTML('afterEnd', formHtml)
+
+const form = document.querySelector('.lb-header-search')
+
+form.addEventListener('submit', (e) => {
+
+  e.preventDefault()
+
+  const film = form.querySelector('input').value
+
+  if(film) {
+    window.location.assign('/search/films/'+film)
+  }
+
+})
+
 
 const style = document.createElement('style')
 
@@ -382,7 +399,6 @@ color:white;
 
 document.head.appendChild(style)
 
-header.insertAdjacentHTML('afterEnd', formHtml)
 
 //document.querySelector("#find-film").remove()
 //document.querySelector('.js-header-signin-form').remove()
