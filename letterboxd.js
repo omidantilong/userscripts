@@ -3,7 +3,7 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.12
+// @version     1.1.13
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
@@ -30,12 +30,67 @@ form.addEventListener('submit', (e) => {
 
   const film = form.querySelector('input').value
 
-  if(film) {
-    window.location.assign('/search/films/'+film)
+  if (film) {
+    window.location.assign('/search/films/' + film)
   }
 
 })
 
+async function getPoster() {
+
+  if (window.location.pathname.includes('/film/')) {
+
+    // const film = /film\/(.*)\//.exec(window.location.pathname)
+    const res = await fetch(window.location.pathname + '/poster/std/1000/?k=1cdd1423').then(r => r.json())
+
+    const posterUrl = res.url2x ?? res.url ?? null
+
+    if (posterUrl) {
+
+      document.querySelector('section.poster-list .react-component').insertAdjacentHTML('beforeend', `<a class="poster-dl" href="${posterUrl}" target="_blank">POSTER</a>`)
+
+      return {el: document.querySelector('.poster-dl'), url: posterUrl}
+
+    }
+
+  }
+
+  return false
+
+}
+
+getPoster().then(({el, url}) => {
+
+  el.addEventListener('click', (e) => {
+    e.preventDefault()
+    downloadPoster(url)
+      .then(() => {
+        console.log('The image has been downloaded');
+      })
+      .catch(err => {
+        console.log('Error downloading image: ', err);
+      });
+  });
+
+})
+
+async function downloadPoster(src) {
+  const response = await fetch(src);
+
+  const blobImage = await response.blob();
+
+  const href = URL.createObjectURL(blobImage);
+
+  const anchorElement = document.createElement('a');
+  anchorElement.href = href;
+  anchorElement.download = 'poster.jpg';
+
+  document.body.appendChild(anchorElement);
+  anchorElement.click();
+
+  document.body.removeChild(anchorElement);
+  window.URL.revokeObjectURL(href);
+}
 
 const style = document.createElement('style')
 
@@ -45,6 +100,16 @@ body.film {
   background:#14181c;
 }
 
+a.poster-dl {
+  background: #00e054;
+  padding:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:1rem 0;
+  color:black;
+  border-radius:4px;
+}
 
 body.film.backdropped .site-header {
   background:linear-gradient(0deg, rgb(0 0 0 / 0), #000)
