@@ -3,12 +3,12 @@
 // @namespace   https://github.com/omidantilong/userscripts
 // @match       https://letterboxd.com/*
 // @grant       none
-// @version     1.1.14
+// @version     1.1.15
 // @author      Omid Kashan
 // @description Various UI tweaks on letterboxd
 // ==/UserScript==
 
-const header = document.querySelector('.site-logo')
+const header = document.querySelector(".site-logo");
 
 const formHtml = `
 <div class="les-global-search">
@@ -18,61 +18,45 @@ const formHtml = `
     </fieldset>
   </form>
 </div>
-`
+`;
 
-header.insertAdjacentHTML('afterEnd', formHtml)
+header.insertAdjacentHTML("afterEnd", formHtml);
 
-const form = document.querySelector('.lb-header-search')
+const form = document.querySelector(".lb-header-search");
 
-form.addEventListener('submit', (e) => {
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-  e.preventDefault()
-
-  const film = form.querySelector('input').value
+  const film = form.querySelector("input").value;
 
   if (film) {
-    window.location.assign('/search/films/' + film)
+    window.location.assign("/search/films/" + film);
   }
-
-})
+});
 
 async function getPoster() {
-
-  if (window.location.pathname.includes('/film/')) {
-
+  if (window.location.pathname.includes("/film/")) {
     // const film = /film\/(.*)\//.exec(window.location.pathname)
-    const res = await fetch(window.location.pathname + '/poster/std/1000/?k=1cdd1423').then(r => r.json())
+    const res = await fetch(window.location.pathname + "/poster/std/1000/?k=1cdd1423").then((r) =>
+      r.json()
+    );
 
-    const posterUrl = res.url2x ?? res.url ?? null
+    const posterUrl = res.url2x ?? res.url ?? null;
 
     if (posterUrl) {
+      document
+        .querySelector("section.poster-list .react-component")
+        .insertAdjacentHTML(
+          "beforeend",
+          `<a class="poster-dl" href="${posterUrl}" target="_blank">POSTER</a>`
+        );
 
-      document.querySelector('section.poster-list .react-component').insertAdjacentHTML('beforeend', `<a class="poster-dl" href="${posterUrl}" target="_blank">POSTER</a>`)
-
-      return {el: document.querySelector('.poster-dl'), url: posterUrl}
-
+      return { el: document.querySelector(".poster-dl"), url: posterUrl };
     }
-
   }
 
-  return false
-
+  return false;
 }
-
-getPoster().then(({el, url}) => {
-
-  el.addEventListener('click', (e) => {
-    e.preventDefault()
-    downloadPoster(url)
-      .then(() => {
-        console.log('The image has been downloaded');
-      })
-      .catch(err => {
-        console.log('Error downloading image: ', err);
-      });
-  });
-
-})
 
 async function downloadPoster(src) {
   const response = await fetch(src);
@@ -81,9 +65,9 @@ async function downloadPoster(src) {
 
   const href = URL.createObjectURL(blobImage);
 
-  const anchorElement = document.createElement('a');
+  const anchorElement = document.createElement("a");
   anchorElement.href = href;
-  anchorElement.download = 'poster.jpg';
+  anchorElement.download = "poster.jpg";
 
   document.body.appendChild(anchorElement);
   anchorElement.click();
@@ -92,7 +76,36 @@ async function downloadPoster(src) {
   window.URL.revokeObjectURL(href);
 }
 
-const style = document.createElement('style')
+window.addEventListener("load", (event) => {
+  console.log(window.location.href);
+
+  if (window.location.href.includes(".com/film/")) {
+    getPoster().then(({ el, url }) => {
+      if (el) {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          downloadPoster(url)
+            .then(() => {
+              console.log("The image has been downloaded");
+            })
+            .catch((err) => {
+              console.log("Error downloading image: ", err);
+            });
+        });
+      }
+    });
+  }
+
+  if (window.location.pathname.includes("/diary/")) {
+    document
+      .querySelectorAll(".diary-entry-row .poster a")
+      .forEach((poster) =>
+        poster.setAttribute("href", poster.getAttribute("href").match(/\/film\/(.*)\//)[0])
+      );
+  }
+});
+
+const style = document.createElement("style");
 
 style.textContent = `
 
@@ -298,6 +311,15 @@ body:has(.subnav:hover) #content {
   font-size:1.5rem;
 }
 
+.viewing-list article {
+  grid-template-columns: 110px auto;
+}
+
+.viewing-list article .film-poster img {
+  width:100px;
+  height:auto;
+}
+
 p a.text-slug {
   font-size:1.125rem;
 }
@@ -320,8 +342,8 @@ p.text-link.text-footer {
   margin-left:0 !important;
 }
 
-#favourites .poster-list.-horizontal,
-#recent-activity .poster-list.-horizontal {
+#favourites .poster-grid .grid.-p150,
+#recent-activity .poster-grid .grid.-p150 {
   grid-template-columns:repeat(4, 1fr);
 }
 
@@ -414,8 +436,28 @@ a.all-link {
   width:auto;
 }
 
+body.activity-stream .cols-3 {
+  grid-template-columns: 9fr 3fr !important;
+}
+
+.wide-sidebar .banner {
+  display:none !important;
+}
+
+.wide-sidebar section.watchlist-aside {
+  margin-top:0 !important;
+}
+
 .films-watched .cols-2 {
   grid-template-columns:1fr;
+}
+
+body.films-watched .grid.-p70 {
+  grid-template-columns:repeat(12, 1fr);
+}
+
+body.films-watched .grid.-p150 {
+  grid-template-columns:repeat(6, 1fr);
 }
 
 .pagination,
@@ -459,11 +501,21 @@ color:white;
   font-size:2rem;
 }
 
+.jnotify-container {
+  top:unset !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  bottom:16px !important;
+}
 
-`
+.jnotify-container .jnotify-notification {
+  padding:8px 8px 4px 8px !important;
+  text-align:center !important;
+}
 
-document.head.appendChild(style)
+`;
 
+document.head.appendChild(style);
 
 //document.querySelector("#find-film").remove()
 //document.querySelector('.js-header-signin-form').remove()
